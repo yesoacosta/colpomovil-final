@@ -1,12 +1,12 @@
 {
   "name": "colpomovil-final",
   "version": "1.0.0",
-  "description": "App ColpoVision con Vercel Functions",
-  "type": "module",
-  "engines": {
-    "node": "20.x"
+  "description": "App para informes colposcópicos con Gemini y Vercel",
+  "main": "index.html",
+  "scripts": {
+    "start": "vercel dev"
   },
   "dependencies": {
-    "node-fetch": "3.3.2"  // <--- ¡Esta es la adición clave!
+    "node-fetch": "^2.6.1"
   }
 }
