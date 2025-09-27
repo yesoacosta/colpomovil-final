@@ -2,6 +2,7 @@
   "name": "colpomovil-final",
   "version": "1.0.0",
   "description": "App ColpoVision con Vercel Functions",
+  "type": "module",  // <--- ¡Esta es la línea MÁGICA!
   "engines": {
     "node": "20.x"
   }
