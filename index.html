@@ -306,41 +306,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <script>
+        // *** ESTA ES LA URL SEGURA PARA LLAMAR A LA FUNCIÓN DE VERCEL ***
         const apiUrl = "/api/generate";
 
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                const swCode = `
-                    self.addEventListener('install', (event) => {
-                        console.log('Service Worker: Evento de instalación.');
-                        self.skipWaiting();
-                    });
-
-                    self.addEventListener('activate', (event) => {
-                        console.log('Service Worker: Evento de activación.');
-                        event.waitUntil(self.clients.claim());
-                    });
-
-                    self.addEventListener('fetch', (event) => {
-                        event.respondWith(fetch(event.request));
-                    });
-                `;
-                const swBlob = new Blob([swCode], { type: 'application/javascript' });
-                const swUrl = URL.createObjectURL(swBlob);
-
-                navigator.serviceWorker.register(swUrl)
-                    .then(registration => {
-                        console.log('Service Worker registrado con éxito:', registration);
-                    })
-                    .catch(error => {
-                        console.log('Fallo el registro del Service Worker:', error);
-                    });
-            });
-        } else {
-            console.warn('El navegador no soporta Service Workers.');
-        }
-    </script>
-    <script>
         window.onload = function() {
             const { jsPDF } = window.jspdf;
 
@@ -503,37 +471,16 @@
             });
 
             cameraBtn.addEventListener('click', async () => {
-    // 💡 Paso Clave: Define las restricciones de video.
-    // 'facingMode: { exact: "environment" }' indica al navegador que use la cámara trasera.
-    const constraints = { 
-        video: {
-            facingMode: { exact: "environment" } 
-        }, 
-        audio: false 
-    };
-
-    try {
-        // Intenta obtener la cámara trasera primero
-        stream = await navigator.mediaDevices.getUserMedia(constraints);
-        
-        videoStream.srcObject = stream;
-        cameraModal.classList.remove('hidden');
-        cameraModal.classList.add('flex');
-    } catch (err) {
-        // Si falla la cámara trasera (ej. no existe), intenta con cualquier cámara disponible.
-        console.warn("Fallo al acceder a la cámara trasera. Intentando con cualquier cámara...", err);
-        
-        try {
-            stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-            videoStream.srcObject = stream;
-            cameraModal.classList.remove('hidden');
-            cameraModal.classList.add('flex');
-        } catch (finalError) {
-            console.error("Error final al acceder a la cámara: ", finalError);
-            showModal('Error de Cámara', 'No se pudo acceder a ninguna cámara. Por favor, revisa los permisos del dispositivo.');
-        }
-    }
-});
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                    videoStream.srcObject = stream;
+                    cameraModal.classList.remove('hidden');
+                    cameraModal.classList.add('flex');
+                } catch (err) {
+                    console.error("Error al acceder a la cámara: ", err);
+                    showModal('Error de Cámara', 'No se pudo acceder a la cámara. Por favor, revisa los permisos.');
+                }
+            });
 
             captureBtn.addEventListener('click', () => {
                 const context = canvasCapture.getContext('2d');
@@ -697,7 +644,10 @@
                             }
                         ],
                     };
-                    const apiUrl = "/api/generate";\
+                    
+                    // *** CORRECCIÓN: USAR LA VARIABLE apiUrl GLOBAL /api/generate ***
+                    // La variable 'apiUrl' ya está definida arriba y apunta a la función segura de Vercel.
+                    // NO es necesario redefinirla aquí.
                     
                     let response;
                     let retries = 0;
@@ -946,6 +896,4 @@
         };
     </script>
 </body>
-
 </html>
-
