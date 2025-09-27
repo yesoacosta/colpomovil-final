@@ -1,0 +1,8 @@
+{
+  "name": "colpomovil-final",
+  "version": "1.0.0",
+  "description": "App ColpoVision con Vercel Functions",
+  "engines": {
+    "node": "20.x"
+  }
+}
