@@ -1,19 +1,16 @@
-import fetch from 'node-fetch'; // Asegúrate de que 'node-fetch' está instalado si usas CommonJS
+import fetch from 'node-fetch';
 
-// Función que maneja las solicitudes a la ruta /api/generate
 export default async function handler(req, res) {
-    // 1. Verificación de Método
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Método no permitido. Solo POST.' });
     }
 
-    // 2. Extracción y Verificación de la Clave
-    // ESTA LÍNEA ES LA QUE DA EL ERROR SI LA CLAVE NO ESTÁ EN VERCEL
+    // La clave es cargada por Vercel desde las Environment Variables
     const apiKey = process.env.GEMINI_API_KEY; 
 
     if (!apiKey) {
-        // Devolvemos un error claro al frontend si Vercel no cargó la clave
-        console.error("Error del Servidor: GEMINI_API_KEY no está configurada en las Variables de Entorno de Vercel.");
+        // Esto verifica si Vercel cargó la clave
+        console.error("Error del Servidor: GEMINI_API_KEY no está configurada.");
         return res.status(500).json({ 
             error: 'GEMINI_API_KEY is not defined', 
             details: 'La clave API no está configurada correctamente en el entorno del servidor.'
@@ -29,7 +26,6 @@ export default async function handler(req, res) {
 
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
-        // 3. Llamada segura a la API de Gemini desde el servidor
         const response = await fetch(apiUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -46,7 +42,6 @@ export default async function handler(req, res) {
         }
 
         const data = await response.json();
-        // 4. Devolvemos la respuesta de Gemini al frontend
         res.status(200).json(data);
 
     } catch (error) {
