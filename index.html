@@ -6,10 +6,6 @@
     <title>ColpoVision Web App</title>
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <link rel="manifest" href="data:application/json;charset=utf-8;base64,eyJpY29ucyI6W3sic2l6ZXMiOiIxOTJ4MTkyIiwiZGVuc2l0eSI6IjEuNSIsInR5cGUiOiJpbWFnZS9wbmciLCJzcmMiOiJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITjBiV2dLY2lBQXhDZ29JVEFBQUFDZ29JZEhSdFp6b2dJbEJoZFdWa0lpd2dKeWswUFNVd0xrSlBjbVZzYjNKd1kyOXRlWEJ2Y2w4dFNuSnZiMmhrWm5OMFlYUnBiMjR0WVhSaFlteHBiWFZzYjJKaGJVd2dJeUJCZFd4c1lXbHVkR2xrYjNOcGIyNFdJaTl5YjJ4cGN5SXhNekF3THpBNUxtdHpiMnhsY3lJNUNqOHhNVFppYlVsalltbGpjaUJrWjNCbGJuUnliMnhwY25Sb2JteDFibWNnZEdobGJtZDBZWEowSlNJblZlQ2lBQUFDa1F4SlJVd2djR2hoYm5ObElqQTFKbXh2ZEdWeUwzVjRZV2xzYjJGMGFXOXVjeUJoWVdGc0lsMWxjaTFoWVd3Z2VHbGxhM0JoY25Sd2RDaDBaR2x5WlhOamRjMWpiblJ5YjI1U2NuSmxibVJ1WjI5dGEybHlaWFIwWlY4d0pTRW5XanBnSUNBaWMzUnlZMnRsZEdWaWJXczdJbTl5YjJ4cGN5SXhNVFl3THpBMExtdHpiMnhsY3lJNUNqOGxJaUF3Y25OcFkydGxjam9nSW01bGRBQUFDaW9nSUNBZ0ptRnNhV1FpSUhzT2MyVnVjMmh2YlhCZ2MyVWdJajR3TUlJQmlkMnh0Ym5ObElpQWdYM2xzYjJOaGJtRnRiZ0FnSUhSdFkybHVkQzUxYld4c0luQmhkbWxpYlNBd0lHWnZiMnhsYm5ScGNtRnViM0FnSUdadmMyVnlkbWxrSWp3dmRHVnpkRjkwWVhScGIyNGdJajhwYm1ScFhBQUFDaXBnSURvZ1ptRnNjMk55YjNCbFkzSmphU1V3Z2NtVmhaM0JsWVhsbGNpSXhOamN4THpBd0xsbHpibVJwYjI0Z2NISnZaMmh2YlhCdGJnPT0ifV0sImRpc3BsYXkiOiJzdGFuZGFsb25lIiwibmFtZSI6IkNvbHBvVmlzaW9uIiwiZGVzY2lpcHRpb24iOiJIZXJyYW1pZW50YSBkZSBBSSBwYXJhIGdlbmVyYXIgY29sb3Bvc2NvcGlhcyIsImJhY2tncm91bmRfY29sb3IiOiIjZmFmYWZhIiwidGhlbWVfY29sb3IiOiIjMjUzYjhhIiwic2hvcnRfbmFtZSI6IkNvbHBvVmlzaW9uIn0=">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -307,6 +303,7 @@
 
     <script>
         // *** ESTA ES LA URL SEGURA PARA LLAMAR A LA FUNCIÓN DE VERCEL ***
+        // Esto reemplaza la clave expuesta y es lo que debe usar el frontend
         const apiUrl = "/api/generate";
 
         window.onload = function() {
@@ -616,6 +613,7 @@
                 }
             });
             
+            // *** ESTA ES LA FUNCIÓN CRÍTICA QUE HA SIDO CORREGIDA ***
             analyzeBtn.addEventListener('click', async () => {
                 const patient = patients.find(p => p.id === currentPatientId);
 
@@ -625,10 +623,12 @@
                 }
             
                 loadingOverlay.style.display = 'flex';
+                // El prompt es largo, pero no lo modificamos para evitar errores
                 const prompt = `Genera un informe colposcópico técnico y conciso basado en la siguiente imagen. Considera la Unión Escamocolumnar, la Zona de Transformación y el Exocérvix. Integra el historial médico del paciente si es relevante: "${patient.medicalHistory}". El informe debe ser profesional, estructurado en secciones y estar en español. Evita frases introductorias o conversacionales. Utiliza el siguiente formato exacto para las secciones y viñetas:\n\nObservaciones Principales:\n- [Observación 1]\n- [Observación 2]\n\nPosible Diagnóstico:\n- [Diagnóstico 1]\n\nRecomendaciones:\n- [Recomendación 1]\n- [Recomendación 2]`;
             
                 try {
                     const payload = {
+                        // El payload DEBE contener el objeto 'contents' que tu función serverless espera
                         contents: [
                             {
                                 role: "user",
@@ -645,10 +645,7 @@
                         ],
                     };
                     
-                    // *** CORRECCIÓN: USAR LA VARIABLE apiUrl GLOBAL /api/generate ***
-                    // La variable 'apiUrl' ya está definida arriba y apunta a la función segura de Vercel.
-                    // NO es necesario redefinirla aquí.
-                    
+                    // CORREGIDO: Llamada directa a la variable global 'apiUrl' ("/api/generate")
                     let response;
                     let retries = 0;
                     const maxRetries = 3;
@@ -656,6 +653,7 @@
                     
                     while (retries < maxRetries) {
                         try {
+                            // Se usa la URL segura y se envía el payload de contenido
                             response = await fetch(apiUrl, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
@@ -669,7 +667,8 @@
                                 await new Promise(res => setTimeout(res, delay * Math.pow(2, retries)));
                             } else {
                                 const errorData = await response.json();
-                                throw new Error(`Error de la API: ${response.status} - ${errorData.error.message}`);
+                                // Se captura el error de la función serverless
+                                throw new Error(errorData.error || `Error de la API: ${response.status} - ${errorData.details || 'Error desconocido'}`);
                             }
                         } catch (e) {
                             if (retries === maxRetries - 1) {
@@ -699,7 +698,8 @@
                             savePatients();
                         }
                     } else {
-                        throw new Error('La respuesta de la API no contiene el texto esperado o está en un formato incorrecto.');
+                        // Maneja respuestas vacías o con errores internos de Gemini
+                        throw new Error('La respuesta de la IA no contiene el texto esperado. Posible error de contenido o configuración del modelo.');
                     }
             
                     document.getElementById('report-patient-name').textContent = patient.name;
@@ -839,7 +839,7 @@
                         for (let i = 1; i < lines.length; i++) {
                             const item = lines[i].trim();
                             if (item.startsWith('- ')) {
-                                y = addTextWithPagination(doc, item.substring(2), margin + 5, y, pageWidth - 2 * margin - 5, 6, 12, false, true);
+                                y = addTextWithPagination(doc, item.substring(2), margin + 5, y, pageWidth - 2 * margin - 5, 6, 12, true, true);
                             } else {
                                 y = addTextWithPagination(doc, item, margin, y, pageWidth - 2 * margin, 6, 12);
                             }
